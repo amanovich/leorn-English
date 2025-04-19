@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Page {{ page.number }}</title>
+</head>
+<body>
+  <h2>Page {{ page.number }}</h2>
+  <p>{{ page.text }}</p>
+
+  <audio controls>
+    <source src="{{ page.audio_file.url }}" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <hr>
+
+  <h3>Test</h3>
+  <form method="post">
+    {% csrf_token %}
+    {% for question in questions %}
+      <p><strong>{{ question.question_text }}</strong></p>
+      <input type="text" name="question_{{ question.id }}">
+    {% endfor %}
+    <br>
+    <button type="submit">Check</button>
+  </form>
+
+  {% if result %}
+    <p><strong>Result:</strong> {{ result }}</p>
+  {% endif %}
+
+  <br>
+  {% if page.number > 1 %}
+    <a href="{% url 'book_page' page.book.id page.number|add:'-1' %}">⬅️ Previous</a>
+  {% endif %}
+
+  {% if page.book.pages.count > page.number %}
+    <a href="{% url 'book_page' page.book.id page.number|add:'1' %}">Next ➡️</a>
+  {% endif %}
+</body>
+</html>
