@@ -1,4 +1,6 @@
 import json
+
+from django.contrib.admin import display
 from django.http import HttpResponse
 from django.contrib import admin
 from .models import Book, Page, Question
@@ -46,7 +48,8 @@ def export_full_book_json(modeladmin, request, queryset):
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'author')
     actions = [export_full_book_json]
-
+    search_fields = ('title', 'author')
+    list_filter = ('author',)
 
 class QuestionInline(admin.TabularInline):
     model = Question
@@ -56,8 +59,16 @@ class QuestionInline(admin.TabularInline):
 class PageAdmin(admin.ModelAdmin):
     list_display = ('book', 'number')
     inlines = [QuestionInline]
+    search_fields = ('book__title', 'number')
+    list_filter = ('book',)
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('question_text', 'page')
+    search_fields = ('question_text', 'correct_answer', 'page__book__title')
+    list_filter = ('page__book',)
 
 
 admin.site.register(Book, BookAdmin)
 admin.site.register(Page, PageAdmin)
+admin.site.register(Question, QuestionAdmin)
 
